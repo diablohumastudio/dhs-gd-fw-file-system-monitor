@@ -14,9 +14,9 @@ signal changes_detected(changes: DH_FSM_ChangeSet)
 ## out, and the diff runs deferred so class maps rebuild before file events arrive.
 signal script_classes_updated()
 
-## Temporary: prints every emitted ChangeSet to the Output panel for the initial
-## manual verification. Flip to false once verified.
-const DEBUG_LOGGING: bool = true
+## Prints every emitted ChangeSet to the Output panel. Kept for debugging;
+## verified off after the manual test rounds.
+const DEBUG_LOGGING: bool = false
 
 static var instance: DH_FileSystemMonitorPlugin
 
