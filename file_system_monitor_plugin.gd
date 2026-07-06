@@ -78,6 +78,24 @@ func _on_efs_script_classes_updated() -> void:
 	script_classes_updated.emit()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		_diff_on_refocus()
+
+
+## EFS doesn't emit filesystem_changed for content-only changes to native
+## resources (.tres/.tscn) found on the refocus rescan — but our snapshot reads
+## real disk mtimes, so a diff here catches them immediately. Changes it finds
+## happened while the editor was unfocused, hence EXTERNAL context.
+func _diff_on_refocus() -> void:
+	var efs: EditorFileSystem = EditorInterface.get_resource_filesystem()
+	while efs.is_scanning():
+		await get_tree().process_frame
+	if not is_inside_tree():
+		return
+	_run_diff(DH_FSM_ChangeSet.EditorContext.EXTERNAL)
+
+
 func _on_filesystem_changed() -> void:
 	if _diff_queued:
 		return
@@ -85,13 +103,14 @@ func _on_filesystem_changed() -> void:
 	_run_diff.call_deferred()   # coalesces the bursts filesystem_changed fires in
 
 
-func _run_diff() -> void:
+func _run_diff(context: DH_FSM_ChangeSet.EditorContext = DH_FSM_ChangeSet.EditorContext.UNKNOWN) -> void:
 	_diff_queued = false
 	if _snapshot == null:
 		return   # baseline not captured yet; _capture_baseline is still awaiting
 	var new_snapshot: DH_FSM_Snapshot = DH_FSM_Snapshot.capture()
 	var changes: DH_FSM_ChangeSet = DH_FSM_SnapshotDiffer.diff(_snapshot, new_snapshot)
 	_snapshot = new_snapshot
+	changes.editor_context = context
 	_emit_changes(changes)
 
 

@@ -7,11 +7,11 @@ extends RefCounted
 enum EditorContext {UNKNOWN, EDITOR, EXTERNAL}
 
 ## EDITOR when this set came from a FileSystemDock signal (editor-driven remove/
-## move). UNKNOWN for diff-detected sets: Godot exposes no editor-side signal for
-## creates/saves, so a diff can't tell editor from external origin. EXTERNAL is
-## reserved for a future source that can prove it (e.g. a focus-in heuristic).
-## Dock-driven sets are homogeneous, so one field on the set replaces a
-## per-signal editor_context parameter.
+## move). EXTERNAL when found by the editor-refocus diff (the change happened
+## while the editor was unfocused). UNKNOWN for filesystem_changed-driven diffs:
+## Godot exposes no editor-side signal for creates/saves, so those can't tell
+## editor from external origin. Dock-driven sets are homogeneous, so one field
+## on the set replaces a per-signal editor_context parameter.
 var editor_context: EditorContext = EditorContext.UNKNOWN
 
 var created_file_paths: PackedStringArray = []
