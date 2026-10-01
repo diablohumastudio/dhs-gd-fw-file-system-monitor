@@ -2,7 +2,7 @@
 class_name DH_FileSystemMonitorPlugin
 extends EditorPlugin
 ## Emulates the proposed EditorFileSystem file created/modified/deleted/moved
-## signals (dd_redesign_docs/godot proposal.md) in GDScript, batched into
+## signals in GDScript, batched into
 ## DH_FSM_ChangeSets. One shared snapshot for the whole editor; consumer addons
 ## reach the monitor via DH_FileSystemMonitorPlugin.instance.
 
